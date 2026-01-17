@@ -12,6 +12,7 @@ export interface Thread {
   author: string;
   content: string;
   createdAt: string;
+  lastActivityAt: string;
   replyCount: number;
 }
 
@@ -35,7 +36,7 @@ export const getThreads = (): Thread[] => {
 export const getLatestThreads = (limit: number = 10): Thread[] => {
   const threads = getThreads();
   return threads
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort((a, b) => new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime())
     .slice(0, limit);
 };
 
@@ -45,12 +46,14 @@ export const getThread = (id: string): Thread | undefined => {
 
 export const createThread = (title: string, content: string, author: string): Thread => {
   const threads = getThreads();
+  const now = new Date().toISOString();
   const newThread: Thread = {
     id: crypto.randomUUID(),
     title,
     author,
     content,
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    lastActivityAt: now,
     replyCount: 0,
   };
   threads.push(newThread);
@@ -81,11 +84,12 @@ export const createReply = (threadId: string, content: string, author: string): 
   allReplies.push(newReply);
   localStorage.setItem(REPLIES_KEY, JSON.stringify(allReplies));
   
-  // Update reply count
+  // Update reply count and last activity
   const threads = getThreads();
   const threadIndex = threads.findIndex(t => t.id === threadId);
   if (threadIndex !== -1) {
     threads[threadIndex].replyCount++;
+    threads[threadIndex].lastActivityAt = newReply.createdAt;
     localStorage.setItem(THREADS_KEY, JSON.stringify(threads));
   }
   
