@@ -4,7 +4,8 @@ import UsernamePrompt from './UsernamePrompt';
 import ThreadList from './ThreadList';
 import NewThreadForm from './NewThreadForm';
 import { Button } from '@/components/ui/button';
-import { Plus, User } from 'lucide-react';
+import { Plus, User, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Forum = () => {
   const [username, setUsername] = useState<string | null>(null);
@@ -45,9 +46,16 @@ const Forum = () => {
       <header className="bg-card border-b sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold">Simple Forum</h1>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <User className="h-4 w-4" />
-            <span>{username}</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span>{username}</span>
+            </div>
+            <Link to="/admin">
+              <Button variant="ghost" size="icon" title="Admin">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
