@@ -5,7 +5,7 @@ import ThreadList from './ThreadList';
 import NewThreadForm from './NewThreadForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, User, Settings, Image, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Plus, User, Settings, Image, ChevronDown, ChevronUp, X, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const BG_KEY = 'forum_background';
@@ -83,6 +83,9 @@ const Forum = () => {
               <User className="h-4 w-4" />
               <span>{username}</span>
             </div>
+            <Button variant="ghost" size="icon" title="Log out" onClick={() => { localStorage.removeItem('forum_username'); setUsername(null); }}>
+              <LogOut className="h-4 w-4" />
+            </Button>
             <Link to="/admin">
               <Button variant="ghost" size="icon" title="Admin">
                 <Settings className="h-4 w-4" />
