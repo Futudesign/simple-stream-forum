@@ -77,7 +77,7 @@ const Forum = () => {
     >
       <header className="bg-card border-b sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">Simple Forum</h1>
+          <h1 className="text-xl font-bold">FutuForum</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <User className="h-4 w-4" />
