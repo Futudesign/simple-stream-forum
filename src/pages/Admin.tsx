@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getThreads, Thread, Reply, getReplies, updateThread, updateReply, deleteThread, deleteReply, getBlockedIPs, addBlockedIP, removeBlockedIP, getAllReplies } from '@/lib/forumStorage';
+import { getThreads, Thread, Reply, getReplies, updateThread, updateReply, deleteThread, deleteReply, getBlockedIPs, addBlockedIP, removeBlockedIP } from '@/lib/forumStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,7 +19,7 @@ const Admin = () => {
   const [error, setError] = useState('');
   
   const [threads, setThreads] = useState<Thread[]>([]);
-  const [replies, setReplies] = useState<Reply[]>([]);
+  const [threadReplies, setThreadReplies] = useState<Record<string, Reply[]>>({});
   const [blockedIPs, setBlockedIPs] = useState<string[]>([]);
   
   const [editingThread, setEditingThread] = useState<string | null>(null);
@@ -37,8 +37,13 @@ const Admin = () => {
   }, []);
 
   const loadData = () => {
-    setThreads(getThreads());
-    setReplies(getAllReplies());
+    const allThreads = getThreads();
+    setThreads(allThreads);
+    const repliesMap: Record<string, Reply[]> = {};
+    allThreads.forEach(t => {
+      repliesMap[t.id] = getReplies(t.id);
+    });
+    setThreadReplies(repliesMap);
     setBlockedIPs(getBlockedIPs());
   };
 
@@ -168,7 +173,6 @@ const Admin = () => {
         <Tabs defaultValue="threads">
           <TabsList className="mb-4">
             <TabsTrigger value="threads">Threads ({threads.length})</TabsTrigger>
-            <TabsTrigger value="replies">Replies ({replies.length})</TabsTrigger>
             <TabsTrigger value="blocked">Blocked IPs ({blockedIPs.length})</TabsTrigger>
           </TabsList>
 
@@ -202,70 +206,70 @@ const Admin = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold">{thread.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            by {thread.author} · {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
-                          </p>
-                          <p className="text-sm mt-2 line-clamp-2">{thread.content}</p>
+                      <div>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold">{thread.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              by {thread.author} · {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
+                            </p>
+                            <p className="text-sm mt-2 line-clamp-2">{thread.content}</p>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="icon" variant="ghost" onClick={() => startEditThread(thread)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" onClick={() => handleDeleteThread(thread.id)}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex gap-1">
-                          <Button size="icon" variant="ghost" onClick={() => startEditThread(thread)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={() => handleDeleteThread(thread.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
 
-          <TabsContent value="replies" className="space-y-3">
-            {replies.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No replies yet</p>
-            ) : (
-              replies.map((reply) => (
-                <Card key={reply.id}>
-                  <CardContent className="p-4">
-                    {editingReply === reply.id ? (
-                      <div className="space-y-3">
-                        <Textarea
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          placeholder="Content"
-                          rows={3}
-                        />
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={() => saveReply(reply.id)}>
-                            <Check className="h-4 w-4 mr-1" /> Save
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => setEditingReply(null)}>
-                            <X className="h-4 w-4 mr-1" /> Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-muted-foreground">
-                            by {reply.author} · {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
-                          </p>
-                          <p className="text-sm mt-1">{reply.content}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button size="icon" variant="ghost" onClick={() => startEditReply(reply)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={() => handleDeleteReply(reply.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
+                        {(threadReplies[thread.id] || []).length > 0 && (
+                          <div className="mt-3 ml-4 border-l-2 border-muted pl-4 space-y-2">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {threadReplies[thread.id].length} {threadReplies[thread.id].length === 1 ? 'reply' : 'replies'}
+                            </p>
+                            {threadReplies[thread.id].map((reply) => (
+                              <div key={reply.id} className="bg-muted/50 rounded p-3">
+                                {editingReply === reply.id ? (
+                                  <div className="space-y-2">
+                                    <Textarea
+                                      value={editContent}
+                                      onChange={(e) => setEditContent(e.target.value)}
+                                      rows={2}
+                                    />
+                                    <div className="flex gap-2">
+                                      <Button size="sm" onClick={() => saveReply(reply.id)}>
+                                        <Check className="h-3 w-3 mr-1" /> Save
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => setEditingReply(null)}>
+                                        <X className="h-3 w-3 mr-1" /> Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs text-muted-foreground">
+                                        {reply.author} · {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                                      </p>
+                                      <p className="text-sm mt-1">{reply.content}</p>
+                                    </div>
+                                    <div className="flex gap-1">
+                                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEditReply(reply)}>
+                                        <Pencil className="h-3 w-3" />
+                                      </Button>
+                                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleDeleteReply(reply.id)}>
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </CardContent>
