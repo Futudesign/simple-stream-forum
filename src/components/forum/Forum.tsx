@@ -5,7 +5,7 @@ import ThreadList from './ThreadList';
 import NewThreadForm from './NewThreadForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, User, Settings, Image, ChevronDown, ChevronUp, X, LogOut } from 'lucide-react';
+import { Plus, Settings, Image, X, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const BG_KEY = 'forum_background';
@@ -67,7 +67,7 @@ const Forum = () => {
 
   return (
     <div 
-      className="min-h-screen bg-muted/30"
+      className="min-h-screen bg-background"
       style={appliedBg ? {
         backgroundImage: `url(${appliedBg})`,
         backgroundSize: 'cover',
@@ -75,79 +75,80 @@ const Forum = () => {
         backgroundAttachment: 'fixed'
       } : undefined}
     >
-      <header className="bg-card border-b sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">FutuForum</h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <User className="h-4 w-4" />
-              <span>{username}</span>
-            </div>
-            <Button variant="ghost" size="icon" title="Log out" onClick={() => { localStorage.removeItem('forum_username'); setUsername(null); }}>
+      <header className="border-b border-border sticky top-0 z-10 bg-background">
+        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight lowercase">futuforum</h1>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">{username}</span>
+            <button
+              onClick={() => { localStorage.removeItem('forum_username'); setUsername(null); }}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              title="Log out"
+            >
               <LogOut className="h-4 w-4" />
-            </Button>
-            <Link to="/admin">
-              <Button variant="ghost" size="icon" title="Admin">
-                <Settings className="h-4 w-4" />
-              </Button>
+            </button>
+            <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors" title="Admin">
+              <Settings className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {showNewThread ? (
-              <NewThreadForm
-                onSubmit={handleCreateThread}
-                onCancel={() => setShowNewThread(false)}
-              />
-            ) : (
+      <main className="max-w-3xl mx-auto px-6 py-10">
+        <div className="space-y-8">
+          <div className="flex items-center gap-3">
+            {!showNewThread && (
               <>
-                <Button onClick={() => setShowNewThread(true)} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  New Thread
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowBgInput(!showBgInput)}
-                  className="gap-2"
+                <button
+                  onClick={() => setShowNewThread(true)}
+                  className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors flex items-center gap-1.5"
                 >
-                  <Image className="h-4 w-4" />
-                  Change Background
-                  {showBgInput ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </Button>
+                  <Plus className="h-3.5 w-3.5" />
+                  New Thread
+                </button>
+                <span className="text-border">·</span>
+                <button
+                  onClick={() => setShowBgInput(!showBgInput)}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
+                  <Image className="h-3.5 w-3.5" />
+                  Background
+                </button>
               </>
             )}
           </div>
 
+          {showNewThread && (
+            <NewThreadForm
+              onSubmit={handleCreateThread}
+              onCancel={() => setShowNewThread(false)}
+            />
+          )}
+
           {showBgInput && !showNewThread && (
-            <div className="bg-card border rounded-lg p-4 space-y-3 animate-fade-in">
-              <p className="text-sm text-muted-foreground">
-                Enter a URL for the background image:
-              </p>
+            <div className="border-b border-border pb-6 space-y-3">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Background Image URL</p>
               <div className="flex gap-2">
                 <Input
                   placeholder="https://example.com/image.jpg"
                   value={bgUrl}
                   onChange={(e) => setBgUrl(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 text-sm"
                 />
-                <Button onClick={handleApplyBg}>Apply</Button>
+                <Button onClick={handleApplyBg} size="sm">Apply</Button>
                 {appliedBg && (
-                  <Button variant="ghost" size="icon" onClick={handleClearBg} title="Clear background">
+                  <button onClick={handleClearBg} className="text-muted-foreground hover:text-foreground transition-colors" title="Clear">
                     <X className="h-4 w-4" />
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>
           )}
 
-          <div className={appliedBg ? 'bg-background/80 backdrop-blur-sm rounded-lg p-4' : ''}>
-            <h2 className="text-sm font-medium text-muted-foreground mb-3">
-              Latest Threads (showing up to 10)
-            </h2>
+          <div className={appliedBg ? 'bg-background/90 backdrop-blur-sm p-6' : ''}>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-6">
+              Latest Threads
+            </p>
             <ThreadList 
               threads={threads} 
               username={username} 
@@ -157,8 +158,10 @@ const Forum = () => {
         </div>
       </main>
 
-      <footer className="text-center py-4 text-xs text-muted-foreground">
-        Demo only — data is stored locally in your browser
+      <footer className="border-t border-border">
+        <div className="max-w-3xl mx-auto px-6 py-4">
+          <p className="text-xs text-muted-foreground">Demo only — data stored locally</p>
+        </div>
       </footer>
     </div>
   );

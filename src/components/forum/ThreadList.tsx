@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Thread, Reply, getReplies, createReply } from '@/lib/forumStorage';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 interface ThreadListProps {
   threads: Thread[];
@@ -38,66 +38,55 @@ const ThreadList = ({ threads, username, onThreadUpdate }: ThreadListProps) => {
 
   if (threads.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        No threads yet. Be the first to start a discussion!
+      <div className="py-16 text-center text-muted-foreground text-sm">
+        No threads yet. Be the first to start a discussion.
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-border">
       {threads.map((thread) => {
         const isExpanded = expandedId === thread.id;
         return (
-          <div key={thread.id} className="bg-card border rounded-lg overflow-hidden">
+          <div key={thread.id}>
             <div
               onClick={() => handleToggle(thread.id)}
-              className="p-4 hover:bg-accent/50 cursor-pointer transition-colors"
+              className="py-5 cursor-pointer group"
             >
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-muted-foreground">
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground truncate">{thread.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    by <span className="font-medium">{thread.author}</span>
-                    {' · '}
-                    {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground text-sm shrink-0">
-                  <MessageSquare className="h-4 w-4" />
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="font-semibold text-foreground group-hover:text-muted-foreground transition-colors">
+                  {thread.title}
+                </h3>
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs shrink-0">
+                  <MessageSquare className="h-3 w-3" />
                   <span>{thread.replyCount}</span>
                 </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {thread.author} · {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
+              </p>
             </div>
 
             {isExpanded && (
-              <div className="border-t px-4 py-4 space-y-4 bg-muted/30">
-                <p className="whitespace-pre-wrap">{thread.content}</p>
+              <div className="pb-6 space-y-5">
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{thread.content}</p>
 
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-sm font-medium text-muted-foreground">
+                <div className="border-l-2 border-border pl-5 space-y-4">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
                     Replies ({replies.length})
-                  </h4>
+                  </p>
 
                   {replies.map((reply) => (
-                    <div key={reply.id} className="bg-background border rounded-lg p-3">
-                      <p className="text-sm text-muted-foreground mb-1">
-                        <span className="font-medium">{reply.author}</span>
-                        {' · '}
-                        {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                    <div key={reply.id} className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        {reply.author} · {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
                       </p>
-                      <p className="text-sm whitespace-pre-wrap">{reply.content}</p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{reply.content}</p>
                     </div>
                   ))}
 
-                  <form onSubmit={(e) => handleReply(e, thread.id)} className="space-y-2 pt-2">
+                  <form onSubmit={(e) => handleReply(e, thread.id)} className="space-y-3 pt-2">
                     <Textarea
                       placeholder="Write a reply..."
                       value={replyContent}
@@ -105,8 +94,9 @@ const ThreadList = ({ threads, username, onThreadUpdate }: ThreadListProps) => {
                       rows={2}
                       maxLength={1000}
                       required
+                      className="text-sm resize-none"
                     />
-                    <Button type="submit" size="sm">Post Reply</Button>
+                    <Button type="submit" size="sm">Reply</Button>
                   </form>
                 </div>
               </div>
