@@ -20,21 +20,24 @@ const UsernamePrompt = ({ onUsernameSet }: UsernamePromptProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30">
-      <div className="bg-card border rounded-lg p-8 shadow-sm max-w-md w-full mx-4">
-        <h1 className="text-2xl font-bold text-center mb-2">Welcome to the Forum</h1>
-        <p className="text-muted-foreground text-center mb-6">Enter a username to continue</p>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="max-w-sm w-full mx-6 space-y-8">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight lowercase">futuforum</h1>
+          <p className="text-sm text-muted-foreground">Enter a username to continue</p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             type="text"
-            placeholder="Your username"
+            placeholder="Username"
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={20}
             required
+            className="text-center"
           />
           <Button type="submit" className="w-full">
-            Enter Forum
+            Enter
           </Button>
         </form>
       </div>

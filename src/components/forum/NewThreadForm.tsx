@@ -20,14 +20,15 @@ const NewThreadForm = ({ onSubmit, onCancel }: NewThreadFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card border rounded-lg p-4 space-y-4">
-      <h2 className="font-semibold text-lg">New Thread</h2>
+    <form onSubmit={handleSubmit} className="border-b border-border pb-8 space-y-5">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground">New Thread</p>
       <Input
-        placeholder="Thread title"
+        placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         maxLength={100}
         required
+        className="text-lg font-semibold border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground"
       />
       <Textarea
         placeholder="What's on your mind?"
@@ -36,12 +37,13 @@ const NewThreadForm = ({ onSubmit, onCancel }: NewThreadFormProps) => {
         rows={4}
         maxLength={2000}
         required
+        className="text-sm resize-none"
       />
-      <div className="flex gap-2 justify-end">
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <div className="flex gap-3 justify-end">
+        <button type="button" onClick={onCancel} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Cancel
-        </Button>
-        <Button type="submit">Post Thread</Button>
+        </button>
+        <Button type="submit" size="sm">Post</Button>
       </div>
     </form>
   );
