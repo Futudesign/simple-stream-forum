@@ -117,7 +117,7 @@ const Forum = () => {
               <>
                 <button
                   onClick={() => setShowNewThread(true)}
-                  className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors flex items-center gap-1.5 bg-background border border-input px-3 py-1.5"
+                  className="text-sm font-medium text-foreground transition-colors flex items-center gap-1.5 bg-background border border-input px-3 py-1.5 hover:bg-foreground hover:text-background"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Thread
@@ -125,7 +125,7 @@ const Forum = () => {
                 <span className="text-border">·</span>
                 <button
                   onClick={() => setShowBgInput(!showBgInput)}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 bg-background border border-input px-3 py-1.5"
+                  className="text-sm font-medium text-muted-foreground transition-colors flex items-center gap-1.5 bg-background border border-input px-3 py-1.5 hover:bg-foreground hover:text-background"
                 >
                   <Image className="h-3.5 w-3.5" />
                   Background
