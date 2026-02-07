@@ -5,7 +5,8 @@ import ThreadList from './ThreadList';
 import NewThreadForm from './NewThreadForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Settings, Image, X, LogOut } from 'lucide-react';
+import { Plus, Settings, Image, X, LogOut, Upload } from 'lucide-react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const BG_KEY = 'forum_background';
@@ -17,7 +18,7 @@ const Forum = () => {
   const [showBgInput, setShowBgInput] = useState(false);
   const [bgUrl, setBgUrl] = useState('');
   const [appliedBg, setAppliedBg] = useState('');
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const refreshThreads = () => {
     setThreads(getLatestThreads(10));
   };
@@ -59,6 +60,21 @@ const Forum = () => {
     localStorage.removeItem(BG_KEY);
     setAppliedBg('');
     setBgUrl('');
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      localStorage.setItem(BG_KEY, dataUrl);
+      setAppliedBg(dataUrl);
+      setBgUrl('');
+      setShowBgInput(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   if (!username) {
@@ -127,8 +143,8 @@ const Forum = () => {
 
           {showBgInput && !showNewThread && (
             <div className="border-b border-border pb-6 space-y-3">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Background Image URL</p>
-              <div className="flex gap-2">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Background Image</p>
+              <div className="flex gap-2 items-center">
                 <Input
                   placeholder="https://example.com/image.jpg"
                   value={bgUrl}
@@ -136,6 +152,21 @@ const Forum = () => {
                   className="flex-1 text-sm"
                 />
                 <Button onClick={handleApplyBg} size="sm">Apply</Button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 shrink-0"
+                  title="Upload from computer"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  Upload
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
                 {appliedBg && (
                   <button onClick={handleClearBg} className="text-muted-foreground hover:text-foreground transition-colors" title="Clear">
                     <X className="h-4 w-4" />
