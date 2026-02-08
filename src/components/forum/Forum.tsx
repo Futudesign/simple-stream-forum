@@ -195,11 +195,6 @@ const Forum = () => {
         </div>
       </main>
 
-      <footer className="border-t border-border">
-        <div className="max-w-3xl mx-auto px-6 py-4">
-          <p className="text-xs text-muted-foreground">Demo only — data stored locally</p>
-        </div>
-      </footer>
     </div>
   );
 };
