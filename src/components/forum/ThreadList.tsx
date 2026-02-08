@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Thread, Reply, getReplies, createReply } from '@/lib/forumStorage';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare } from 'lucide-react';
+import { renderContentWithEmbeds } from './YouTubeEmbed';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
@@ -70,7 +71,7 @@ const ThreadList = ({ threads, username, onThreadUpdate }: ThreadListProps) => {
 
             {isExpanded && (
               <div className="pb-6 space-y-5">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{thread.content}</p>
+                <div className="text-sm leading-relaxed">{renderContentWithEmbeds(thread.content)}</div>
 
                 <div className="border-l-2 border-border pl-5 space-y-4">
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -82,7 +83,7 @@ const ThreadList = ({ threads, username, onThreadUpdate }: ThreadListProps) => {
                       <p className="text-xs text-muted-foreground">
                         {reply.author} · {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
                       </p>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{reply.content}</p>
+                      <div className="text-sm leading-relaxed">{renderContentWithEmbeds(reply.content)}</div>
                     </div>
                   ))}
 
