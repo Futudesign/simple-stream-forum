@@ -3,6 +3,7 @@ import { Thread, Reply, getReplies, createReply } from '@/lib/forumStorage';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
+import { renderContentWithEmbeds } from './YouTubeEmbed';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ThreadViewProps {
@@ -38,7 +39,7 @@ const ThreadView = ({ thread, username, onBack }: ThreadViewProps) => {
           {' · '}
           {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
         </p>
-        <p className="mt-4 whitespace-pre-wrap">{thread.content}</p>
+        <div className="mt-4">{renderContentWithEmbeds(thread.content)}</div>
       </div>
 
       <div className="space-y-3">
@@ -51,7 +52,7 @@ const ThreadView = ({ thread, username, onBack }: ThreadViewProps) => {
               {' · '}
               {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
             </p>
-            <p className="whitespace-pre-wrap">{reply.content}</p>
+            <div>{renderContentWithEmbeds(reply.content)}</div>
           </div>
         ))}
 
