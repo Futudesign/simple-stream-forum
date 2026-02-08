@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Settings, Image, X, LogOut, Upload } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useOnlineUsers } from '@/hooks/useOnlineUsers';
 
 const BG_KEY = 'forum_background';
 
@@ -19,6 +20,7 @@ const Forum = () => {
   const [bgUrl, setBgUrl] = useState('');
   const [appliedBg, setAppliedBg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const onlineCount = useOnlineUsers(username);
   const refreshThreads = () => {
     setThreads(getLatestThreads(10));
   };
@@ -95,6 +97,10 @@ const Forum = () => {
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight lowercase">futuforum</h1>
           <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">
+              {onlineCount <= 1 ? 'Yksi futuilija paikalla.' : `${onlineCount} futuilijaa paikalla!`}
+            </span>
+            <span className="text-border">·</span>
             <span className="text-sm text-muted-foreground">{username}</span>
             <button
               onClick={() => { localStorage.removeItem('forum_username'); setUsername(null); }}
